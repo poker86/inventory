@@ -17,6 +17,8 @@
         const videoElement = document.getElementById('barcode-scanner');
         const startScanBtn = document.getElementById('startScanBtn');
         const scannerContainer = document.getElementById('scanner-container');
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d', { willReadFrequently: true });
 
         startScanBtn.addEventListener('click', () => {
             Quagga.init({
