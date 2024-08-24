@@ -3,43 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuaggaJS Test</title>
+    <title>Simple Camera Access</title>
 </head>
 <body>
-    <h1>QuaggaJS Camera Test</h1>
-    <button id="startScanBtn">Start Scan</button>
-    <div id="scanner-container" style="display:none;">
-        <video id="barcode-scanner"></video>
+    <button id="startCameraBtn">Start Camera</button>
+    <div id="camera-container" style="display:none;">
+        <video id="camera-feed" width="640" height="480" autoplay></video>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const videoElement = document.getElementById('barcode-scanner');
-        const startScanBtn = document.getElementById('startScanBtn');
-        const scannerContainer = document.getElementById('scanner-container');
+        const videoElement = document.getElementById('camera-feed');
+        const startCameraBtn = document.getElementById('startCameraBtn');
+        const cameraContainer = document.getElementById('camera-container');
 
-        startScanBtn.addEventListener('click', () => {
-            Quagga.init({
-                inputStream: {
-                    type: "LiveStream",
-                    target: videoElement,
-                    constraints: {
-                        facingMode: "environment" // Use the back camera
-                    }
-                },
-                decoder: {
-                    readers: ["code_128_reader", "ean_reader", "ean_8_reader"] // Add the barcode formats you want to support
-                }
-            }, (err) => {
-                if (err) {
-                    console.error("Error initializing QuaggaJS:", err);
-                    return;
-                }
-                Quagga.start();
-                startScanBtn.style.display = 'none';
-                scannerContainer.style.display = 'block';
-            });
+        startCameraBtn.addEventListener('click', () => {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                    .then(stream => {
+                        videoElement.srcObject = stream;
+                        videoElement.play();
+                        startCameraBtn.style.display = 'none';
+                        cameraContainer.style.display = 'block';
+                    })
+                    .catch(err => {
+                        console.error("Error accessing camera: ", err);
+                    });
+            } else {
+                console.error("getUserMedia not supported in this browser.");
+            }
         });
     });
     </script>
