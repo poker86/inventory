@@ -1,13 +1,13 @@
+function showMessage(message) {
+    const debugMessage = document.getElementById('debug-message');
+    debugMessage.style.display = 'block';
+    debugMessage.textContent = message;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const videoElement = document.getElementById('barcode-scanner');
     const startScanBtn = document.getElementById('startScanBtn');
     const scannerContainer = document.getElementById('scanner-container');
-
-    function showMessage(message) {
-        const debugMessage = document.getElementById('debug-message');
-        debugMessage.style.display = 'block';
-        debugMessage.textContent = message;
-    }
 
     startScanBtn.addEventListener('click', () => {
         showMessage("Start Scan button clicked.");
@@ -34,5 +34,17 @@ document.addEventListener('DOMContentLoaded', () => {
             startScanBtn.classList.add('is-hidden');
             scannerContainer.classList.remove('is-hidden');
         });
+    });
+
+    Quagga.onDetected((result) => {
+        showMessage('Barcode detected: ' + result.codeResult.code);
+
+        const matchedRow = document.querySelector(`tr[data-barcode="${result.codeResult.code}"]`);
+        if (matchedRow) {
+            const input = matchedRow.querySelector('input');
+            if (input) {
+                input.focus();
+            }
+        }
     });
 });
